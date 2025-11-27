@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const InputBox = styled.div`
@@ -26,23 +26,46 @@ const InputBox = styled.div`
 `
 
 const Helper = styled.div`
-    font-size: 12px;
-    padding-top: 4px;
-    //margin-top: 4px; /* 거의 붙도록 최소 간격 */
-    //margin-bottom: 15px; /* 다음 요소와는 간격 확보 */
+    font-size: 14px;
+    padding: 5px 0;
+    
     overflow: visible;
     white-space: nowrap;
     text-overflow: ellipsis;
-    color: ${props => (props.$valid ? 'green' : '#FF0000')};
+    color: ${props => (props.$pass ? '#2B75CB' : '#CB3D0B')};
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+    &::before {
+        content: "";
+        flex-shrink: 0;
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin-bottom: 3px;
+
+        background-image: url(${props => (props.$pass ? "/src/assets/check.svg" : "/src/assets/warning-fill.svg")});
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        vertical-align: middle;
+    }
 `
 
-export const Input = ({ target, type, placeholder, label, helper, blurEvent }) => {
-    const [valid, setValid] = useState(false);
+export const Input = ({ target, type, placeholder, label, helper, validation, isLogin = false, ref = null }) => {
+    const [pass, setPass] = useState(false);
     const [focused, setFocused] = useState(false);
     const [helperText, setHelperText] = useState(helper);
 
     const blurEventHandler = (e) => {
-        blurEvent(e, target);
+        const result = validation(e, target);
+        // TODO: Reducer 적용 고민
+        if (!isLogin) {
+            setPass(result.pass);
+            setHelperText(result.message);
+        }
         setFocused(false);
     }
 
@@ -51,13 +74,14 @@ export const Input = ({ target, type, placeholder, label, helper, blurEvent }) =
             <label htmlFor={target}>{label}</label>
             <InputBox $focused={focused}>
                 <input
+                    ref={ref}
                     type={type}
                     id={target}
                     placeholder={placeholder}
                     onFocus={() => setFocused(true)}
                     onBlur={(e) => blurEventHandler(e)}
                 />
-                <Helper $valid={valid}>{helperText}</Helper>
+                {!isLogin && <Helper $pass={pass}>{helperText}</Helper>}
             </InputBox>
         </>
     )
