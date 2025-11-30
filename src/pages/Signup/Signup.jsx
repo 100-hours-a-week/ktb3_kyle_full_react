@@ -9,8 +9,12 @@ import {
 } from "../../utils/Validation.js";
 import { useEffect, useRef, useState } from "react";
 import { ProfileImage } from "../../components/Commmon/ProfileImage.jsx";
+import { useImagePreview } from "../../hooks/useImagePreview.jsx";
+import { api } from "../../utils/axios.js";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+    const navigator = useNavigate();
     const validations = {
         email: emailValidation,
         password: passwordValidation,
@@ -25,6 +29,7 @@ export default function Signup() {
     );
     const [signupDisabled, setSignupDisabled] = useState(true);
     const passwordCheckRef = useRef(null);
+    const imagePreview = useImagePreview();
 
     useEffect(() => {
         const available = Object.values(validState).every(value => value === true);
@@ -36,10 +41,11 @@ export default function Signup() {
         passwordCheckRef.current.blur();
     }, [signupState.password])
 
-    const validationEvent = (e, target) => {
+    const validationEvent = async (e, target) => {
         const validation = validations[target];
         const value = e.target.value;
-        const result = validation(value);
+        const maybePromise = validation(value);
+        const result = maybePromise instanceof Promise ? await maybePromise : maybePromise;
 
         setSignupState(prev => ({
             ...prev, [target]: value,
@@ -52,11 +58,29 @@ export default function Signup() {
         return result;
     }
 
+    const createUser = async () => {
+        const formData = new FormData();
+        formData.append(
+            "request",
+            new Blob([JSON.stringify({
+                email: signupState.email,
+                password: signupState.password,
+                nickname: signupState.nickname,
+            })], { type: "application/json" })
+        );
+        formData.append("image", imagePreview.imageFiles?.at(0));
+
+        const { data } = await api.postForm(`/users`, formData);
+        if (data.success) {
+            navigator(`/login`);
+        }
+    }
+
     return (
         <FormBox>
             <FormTitle>회원가입</FormTitle>
             <InputWrapper>
-                <ProfileImage length={"140px"}/>
+                <ProfileImage length={"140px"} imagePreview={imagePreview}/>
                 <Input
                     label={"이메일"}
                     target={"email"}
@@ -91,8 +115,8 @@ export default function Signup() {
                     validation={validationEvent}
                 />
             </InputWrapper>
-            <LargeButton text={"회원가입"} variant={"top"} disabled={signupDisabled}/>
-            <LargeButton text={"로그인"} variant={"bottom"} disabled={false}/>
+            <LargeButton text={"회원가입"} variant={"top"} disabled={signupDisabled} clickEvent={createUser}/>
+            <LargeButton text={"로그인"} variant={"bottom"} disabled={false} clickEvent={() => navigator(`/login`)}/>
         </FormBox>
     )
 }

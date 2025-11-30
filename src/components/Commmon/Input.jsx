@@ -59,8 +59,8 @@ export const Input = ({ target, type, placeholder, label, helper, validation, is
     const [focused, setFocused] = useState(false);
     const [helperText, setHelperText] = useState(helper);
 
-    const blurEventHandler = (e) => {
-        const result = validation(e, target);
+    const blurEventHandler = async (e) => {
+        const result = await validation(e, target);
         // TODO: Reducer 적용 고민
         if (!isLogin) {
             setPass(result.pass);
