@@ -2,70 +2,75 @@ import { FormBox, FormTitle, InputWrapper } from "../../styles/form/style.jsx";
 import { Input } from "../../components/Commmon/Input.jsx";
 import { LargeButton } from "../../components/Commmon/LargeButton.jsx";
 import {
-    emailValidation,
+    emailValidation, loginEmailValidation,
     nicknameValidation,
     passwordCheckValidation,
     passwordValidation
 } from "../../utils/Validation.js";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { ProfileImage } from "../../components/Commmon/ProfileImage.jsx";
 import { useImagePreview } from "../../hooks/useImagePreview.jsx";
 import { api } from "../../utils/axios.js";
 import { useNavigate } from "react-router-dom";
 
+function signupReducer(state, action) {
+    switch (action.type) {
+        case "CHANGE":
+            return {
+                ...state,
+                values: { ...state.values, [action.target]: action.value },
+                valid: { ...state.valid, [action.target]: action.pass }
+            };
+        case "SUBMIT":
+            return { ...state, submitting: true };
+        case "FAIL":
+            return { ...state, submitting: false };
+        default:
+            return state;
+    }
+}
+
+const initialState = {
+    values: { email: "", password: "", passwordCheck: "", nickname: "" },
+    valid: { email: false, password: false, passwordCheck: false, nickname: false },
+    submitting: false
+};
+
 export default function Signup() {
     const navigator = useNavigate();
+    const [state, dispatch] = useReducer(signupReducer, initialState);
     const validations = {
         email: emailValidation,
         password: passwordValidation,
-        passwordCheck: (value) => passwordCheckValidation(value, signupState.password),
+        passwordCheck: (value) => passwordCheckValidation(value, state.values.password),
         nickname: nicknameValidation
     };
-    const [signupState, setSignupState] = useState(
-        { email: "", password: "", passwordCheck: "", nickname: "" }
-    );
-    const [validState, setValidState] = useState(
-        { email: false, password: false, passwordCheck: false, nickname: false }
-    );
-    const [signupDisabled, setSignupDisabled] = useState(true);
     const passwordCheckRef = useRef(null);
     const imagePreview = useImagePreview();
 
     useEffect(() => {
-        const available = Object.values(validState).every(value => value === true);
-        setSignupDisabled(!available);
-    }, [validState]);
-
-    useEffect(() => {
         passwordCheckRef.current.focus();
         passwordCheckRef.current.blur();
-    }, [signupState.password])
+    }, [state.values.password])
 
     const validationEvent = async (e, target) => {
-        const validation = validations[target];
         const value = e.target.value;
-        const maybePromise = validation(value);
+        const maybePromise = validations[target](value);
         const result = maybePromise instanceof Promise ? await maybePromise : maybePromise;
 
-        setSignupState(prev => ({
-            ...prev, [target]: value,
-        }));
-
-        setValidState(prev => ({
-            ...prev, [target]: result.pass
-        }));
-
+        dispatch({ type: "CHANGE", target: target, value: value, pass: result.pass });
         return result;
     }
 
     const createUser = async () => {
+        dispatch({ type: "SUBMIT" });
         const formData = new FormData();
         formData.append(
             "request",
             new Blob([JSON.stringify({
-                email: signupState.email,
-                password: signupState.password,
-                nickname: signupState.nickname,
+                email: state.values.email,
+                password: state.values.password,
+                nickname: state.values.nickname,
             })], { type: "application/json" })
         );
         formData.append("image", imagePreview.imageFiles?.at(0));
@@ -73,6 +78,8 @@ export default function Signup() {
         const { data } = await api.postForm(`/users`, formData);
         if (data.success) {
             navigator(`/login`);
+        } else {
+            dispatch({ type: "FAIL" });
         }
     }
 
@@ -115,8 +122,18 @@ export default function Signup() {
                     validation={validationEvent}
                 />
             </InputWrapper>
-            <LargeButton text={"회원가입"} variant={"top"} disabled={signupDisabled} clickEvent={createUser}/>
-            <LargeButton text={"로그인"} variant={"bottom"} disabled={false} clickEvent={() => navigator(`/login`)}/>
+            <LargeButton
+                text={"회원가입"}
+                variant={"top"}
+                disabled={!Object.values(state.valid).every(value => value === true) || state.submitting}
+                clickEvent={createUser}
+            />
+            <LargeButton
+                text={"로그인 하러가기"}
+                variant={"bottom"}
+                disabled={false}
+                clickEvent={() => navigator(`/login`)}
+            />
         </FormBox>
     )
 }
