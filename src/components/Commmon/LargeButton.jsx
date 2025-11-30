@@ -18,15 +18,16 @@ const Button = styled.button`
     font-size: 15px;
     font-weight: 700;
     z-index: 3;
+
     &:active {
         background-color: ${props => (props.$variant === "top" ? '#ECAA00' : '#F7F7F7')};
     }
 `
 
-export const LargeButton = ({disabled = true, text, variant}) => {
+export const LargeButton = ({ disabled = true, text, variant, clickEvent }) => {
     return (
         <>
-            <Button $disabled={disabled} $variant={variant} disabled={disabled}>{text}</Button>
+            <Button onClick={clickEvent} $disabled={disabled} $variant={variant} disabled={disabled}>{text}</Button>
         </>
     )
 }

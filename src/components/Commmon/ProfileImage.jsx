@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useRef, useState } from "react";
+import { GOOGLE_CLOUD_STORAGE_URL } from "../../utils/Config.js";
 
 const ImageWrapper = styled.div`
     width: 100%;
@@ -33,7 +34,7 @@ export const ProfileImage = ({ length, imageUrl = null, isUpload = true, imagePr
             <ImageWrapper>
                 <ImageCircle
                     $length={length}
-                    $imageUrl={imagePreview.imageUrlList?.at(0)}
+                    $imageUrl={`${imagePreview.imageUrlList?.at(0)}`}
                     onClick={() => inputRef.current.click()}
                 >
                     {isUpload &&
