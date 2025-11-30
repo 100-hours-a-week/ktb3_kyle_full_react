@@ -25,8 +25,9 @@ const ImageCircle = styled.div`
     position: relative;
 `
 
-export const ProfileImage = ({ length, imageUrl = null, isUpload = true, imagePreview }) => {
+export const ProfileImage = ({ length, imagePreview, isUpload = true }) => {
     const inputRef = useRef(null);
+    const imageUrl = imagePreview.imageUrlList?.[0] || null;
 
     return (
         <>
@@ -34,7 +35,7 @@ export const ProfileImage = ({ length, imageUrl = null, isUpload = true, imagePr
             <ImageWrapper>
                 <ImageCircle
                     $length={length}
-                    $imageUrl={`${imagePreview.imageUrlList?.at(0)}`}
+                    $imageUrl={imageUrl}
                     onClick={() => inputRef.current.click()}
                 >
                     {isUpload &&

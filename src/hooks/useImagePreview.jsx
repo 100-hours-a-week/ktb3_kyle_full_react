@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 export function useImagePreview(urlList = null) {
-    const [imageUrlList, setImageUrlList] = useState(urlList ? urlList : []);
+    const [imageUrlList, setImageUrlList] = useState(urlList);
     const [imageFiles, setImageFiles] = useState(null);
 
     const showImagePreview = useCallback(async (e) => {
