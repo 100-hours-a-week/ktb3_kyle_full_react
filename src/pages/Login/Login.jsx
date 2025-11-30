@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Input } from "../../components/Commmon/Input.jsx";
 import { emailValidation, loginEmailValidation, passwordValidation } from "../../utils/Validation.js";
 import { LargeButton } from "../../components/Commmon/LargeButton.jsx";
@@ -7,60 +7,64 @@ import { FormBox, FormTitle, InputWrapper } from "../../styles/form/style.jsx";
 import { api } from "../../utils/axios.js";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
-    const navigator = useNavigate();
-    const validations = {
+function loginReducer(state, action) {
+    switch (action.type) {
+        case "CHANGE":
+            return {
+                ...state,
+                values: { ...state.values, [action.target]: action.value },
+                valid: { ...state.valid, [action.target]: action.pass }
+            };
+        case "SHOW_TOAST":
+            return {
+                ...state,
+                toast: { show: true, message: action.message }
+            }
+        case "HIDE_TOAST":
+            return {
+                ...state,
+                toast: { ...state.toast, show: false }
+            }
+        default:
+            return state;
+    }
+}
+
+const initialState = {
+    values: { email: "", password: "" },
+    valid: { email: false, password: false },
+    toast: { show: false, message: "" },
+    validations: {
         email: loginEmailValidation,
         password: passwordValidation
-    };
-    const [loginState, setLoginState] = useState(
-        { email: "", password: "" }
-    );
-    const [validState, setValidState] = useState(
-        { email: false, password: false }
-    );
-    const [loginDisabled, setLoginDisabled] = useState(true);
-    const [toastShow, setToastShow] = useState(false);
-    const [toastMessage, setToastMessage] = useState("");
+    }
+};
 
-    useEffect(() => {
-        const available = Object.values(validState).every(value => value === true);
-        setLoginDisabled(!available);
-    }, [validState]);
+export default function Login() {
+    const navigator = useNavigate();
+    const [loginState, dispatch] = useReducer(loginReducer, initialState);
 
     function toastHandler(message) {
-        setToastMessage(message);
-        setToastShow(true);
+        dispatch({ type: "SHOW_TOAST", message: message });
         setTimeout(() => {
-            setToastShow(false);
+            dispatch({ type: "HIDE_TOAST" });
         }, 1500);
     }
 
     const validationEvent = (e, target) => {
-        const validation = validations[target];
         const value = e.target.value;
-        const result = validation(value);
-
-        setLoginState(prev => ({
-            ...prev, [target]: value,
-        }));
-
-        setValidState(prev => ({
-            ...prev, [target]: result.pass
-        }));
+        const result = loginState.validations[target](value);
+        dispatch({ type: "CHANGE", target: target, value: value, pass: result.pass });
 
         if (!result.pass) {
-            setLoginDisabled(true);
             toastHandler(result.message);
         }
-
-        return result;
     }
 
     const authenticate = async () => {
         const res = await api.post("/auth/sessions", {
-            email: loginState.email,
-            password: loginState.password
+            email: loginState.values.email,
+            password: loginState.values.password
         })
             .then((res) => navigator("/posts"))
             .catch((error) => {
@@ -92,8 +96,12 @@ export default function Login() {
                 />
             </InputWrapper>
             <div style={{ position: "relative" }}>
-                <LargeButton clickEvent={authenticate} text={"로그인"} variant={"top"} disabled={loginDisabled} />
-                <Toast show={toastShow} message={toastMessage}/>
+                <LargeButton
+                    clickEvent={authenticate}
+                    text={"로그인"}
+                    variant={"top"}
+                    disabled={!Object.values(loginState.valid).every(value => value === true)}/>
+                <Toast show={loginState.toast.show} message={loginState.toast.message}/>
             </div>
             <LargeButton text={"회원가입"} disabled={false} variant={"bottom"} clickEvent={() => navigator(`/signup`)}/>
         </FormBox>
