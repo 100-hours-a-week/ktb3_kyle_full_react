@@ -37,7 +37,7 @@ export const ProfileImage = ({ length, imageUrl = null, isUpload = true }) => {
             <ImageWrapper>
                 <ImageCircle
                     $length={length}
-                    $imageUrl={imagePreview.imageUrl}
+                    $imageUrl={imagePreview.imageUrlList[0]}
                     onClick={() => inputRef.current.click()}
                 >
                     {isUpload &&
