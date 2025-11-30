@@ -64,6 +64,7 @@ export const PostList = () => {
                     text={"게시글 작성"}
                     icon={"write.svg"}
                     iconColor={"#FFFFFF"}
+                    clickEvent={() => navigator(`/posts/create`)}
                 />
             </ButtonBox>
             {posts.map(post => (
