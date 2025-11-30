@@ -26,11 +26,12 @@ export function useImagePreview(urlList = null) {
         const imageList = await Promise.all(promises);
         setImageUrlList(imageList);
         setImageFiles(images);
-        console.log(imageList);
     }, []);
 
     const removeSelectedImage = useCallback((indexToRemove) => {
+        imageUrlList.
         setImageUrlList(prev => prev.filter((_, i) => i !== indexToRemove));
+        setImageFiles(prev => prev.filter((_, i) => i !== indexToRemove));
     }, [])
 
     return { imageUrlList, imageFiles, setImageUrlList, showImagePreview, removeSelectedImage }
