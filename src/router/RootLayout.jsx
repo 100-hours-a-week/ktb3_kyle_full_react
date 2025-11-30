@@ -14,12 +14,13 @@ const PageShell = styled.div`
 
 export default function RootLayout() {
     const location = useLocation();
-    const isAuthPage = location.pathname === "/login" || location.pathname === "/signup";
+    const isLoggedIn = ["/login", "/signup"].includes(location.pathname);
+    const noMinHeight = ["/login", "/signup", "/profile-update", "/password-update"].includes(location.pathname);
 
     return (
         <>
-            <Header isLoggedIn={!isAuthPage}/>
-            <PageShell $noMinHeight={isAuthPage}>
+            <Header isLoggedIn={!isLoggedIn}/>
+            <PageShell $noMinHeight={noMinHeight}>
                 <Outlet/>
             </PageShell>
         </>
