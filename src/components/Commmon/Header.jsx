@@ -48,7 +48,7 @@ const HeaderProfile = styled.div`
 
 const DropDown = styled.div`
     width: 115px;
-    height: 105px;
+    height: auto;
     background-color: #FFF4CD;
     border: 1px solid #ECAA00;
     border-radius: 6px;
@@ -113,6 +113,7 @@ export const Header = ({ isLoggedIn }) => {
                         $imageUrl={`${GOOGLE_CLOUD_STORAGE_URL}${profileImageUrl}`}
                     />
                     <DropDown $show={showDropDown}>
+                        <button onClick={() => navigator("/posts")}>게시글 목록</button>
                         <button onClick={() => navigator("/profile-update")}>회원정보수정</button>
                         <button onClick={() => navigator("/password-update")}>비밀번호수정</button>
                         <button onClick={() => logout()}>로그아웃</button>
