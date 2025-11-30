@@ -84,18 +84,18 @@ const Image = styled.div`
     min-width: 100%;
     height: 100%;
     border-radius: 16px;
-    background-image: url("${GOOGLE_CLOUD_STORAGE_URL}${props => props.$imagePath}");
+    background-image: url("${props => props.$imagePath}");
     background-size: cover;
     background-position: center;
 `
 
-export const ImageSlider = ({ imagePaths }) => {
+export const ImageSlider = ({ postImages }) => {
     const [offset, setOffset] = useState(0);
     const [imageIndex, setImageIndex] = useState(0);
 
     const moveSlide = (index) => {
         let currentIndex = 0;
-        const totalCount = imagePaths.length;
+        const totalCount = postImages.length;
 
         if (index < 0) currentIndex = totalCount - 1;
         else if (index >= totalCount) currentIndex = 0;
@@ -107,12 +107,12 @@ export const ImageSlider = ({ imagePaths }) => {
 
     return (
         <SliderContainer>
-            <ImageCounter>{`${imageIndex + 1} / ${imagePaths.length}`}</ImageCounter>
+            <ImageCounter>{`${imageIndex + 1} / ${postImages.length}`}</ImageCounter>
             <SliderButton onClick={() => moveSlide(imageIndex - 1)}/>
             <ImageWrapper>
                 <ImageTracker $offset={offset}>
-                    {imagePaths.map(path => (
-                        <Image key={path} $imagePath={path}></Image>
+                    {postImages.map(postImage => (
+                        <Image key={postImage.postImageId} $imagePath={`${GOOGLE_CLOUD_STORAGE_URL}${postImage.postImagePath}`}></Image>
                     ))}
                 </ImageTracker>
             </ImageWrapper>
