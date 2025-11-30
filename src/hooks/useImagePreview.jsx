@@ -2,12 +2,14 @@ import { useCallback, useState } from "react";
 
 export function useImagePreview(urlList = null) {
     const [imageUrlList, setImageUrlList] = useState(urlList ? urlList : []);
+    const [imageFiles, setImageFiles] = useState(null);
 
     const showImagePreview = useCallback(async (e) => {
         const images = Array.from(e.target.files);
 
         if (!images) {
             setImageUrlList(null);
+            setImageFiles(null);
             return;
         }
 
@@ -23,6 +25,7 @@ export function useImagePreview(urlList = null) {
 
         const imageList = await Promise.all(promises);
         setImageUrlList(imageList);
+        setImageFiles(images);
         console.log(imageList);
     }, []);
 
@@ -30,5 +33,5 @@ export function useImagePreview(urlList = null) {
         setImageUrlList(prev => prev.filter((_, i) => i !== indexToRemove));
     }, [])
 
-    return { imageUrlList, showImagePreview, removeSelectedImage }
+    return { imageUrlList, imageFiles, setImageUrlList, showImagePreview, removeSelectedImage }
 }
