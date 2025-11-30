@@ -10,7 +10,10 @@ export const Observer = ({ getNextItems }) => {
     const fetch = getNextItems();
 
     const observer = new IntersectionObserver(([{ isIntersecting }]) => {
-        if (isIntersecting) fetch();
+        if (isIntersecting) {
+            const result = fetch();
+            if (result === null) observer.disconnect();
+        }
     });
 
     useEffect(() => {
