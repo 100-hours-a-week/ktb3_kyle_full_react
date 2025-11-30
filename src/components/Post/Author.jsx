@@ -25,7 +25,7 @@ const AuthorProfile = styled.div`
     background-repeat: no-repeat;
 `
 
-function PostAuthor({length, authorNickname, authorProfileImage, createdAt, isDetail = false}) {
+function Author({length, authorNickname, authorProfileImage, createdAt, isDetail = false}) {
     return (
         <AuthorInfo $isDetail={isDetail}>
             <AuthorProfile $imageUrl={authorProfileImage} $length={length}/>
@@ -36,4 +36,4 @@ function PostAuthor({length, authorNickname, authorProfileImage, createdAt, isDe
     )
 }
 
-export default PostAuthor;
+export default Author;
