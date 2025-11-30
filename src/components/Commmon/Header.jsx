@@ -113,8 +113,8 @@ export const Header = ({ isLoggedIn }) => {
                         $imageUrl={`${GOOGLE_CLOUD_STORAGE_URL}${profileImageUrl}`}
                     />
                     <DropDown $show={showDropDown}>
-                        <button onClick={() => navigator("/login")}>회원정보수정</button>
-                        <button onClick={() => navigator("/login")}>비밀번호수정</button>
+                        <button onClick={() => navigator("/profile-update")}>회원정보수정</button>
+                        <button onClick={() => navigator("/password-update")}>비밀번호수정</button>
                         <button onClick={() => logout()}>로그아웃</button>
                     </DropDown>
                 </HeaderProfileContainer>
