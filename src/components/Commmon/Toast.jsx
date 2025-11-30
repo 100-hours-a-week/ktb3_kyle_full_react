@@ -42,7 +42,7 @@ const ToastBox = styled.div`
     ${props => props.$show ? css`
         opacity: 1;
         top: 62px;
-        animation: ${vibrate} 0.5s ease-in-out;
+        animation: ${props.$isError ? css`${vibrate} 0.5s ease-in-out` : "none"};
     ` : css`
         opacity: 0;
         top: 0;

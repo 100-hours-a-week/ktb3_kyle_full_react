@@ -54,7 +54,7 @@ const Helper = styled.div`
     }
 `
 
-export const Input = ({ target, type, placeholder, label, helper, validation, isLogin = false, ref = null }) => {
+export const Input = ({ target, type, placeholder, label, helper, validation, isLogin = false, ref = null, value = null, changeAction }) => {
     const [pass, setPass] = useState(false);
     const [focused, setFocused] = useState(false);
     const [helperText, setHelperText] = useState(helper);
