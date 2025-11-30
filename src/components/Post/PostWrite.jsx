@@ -55,18 +55,27 @@ const InputContent = styled.textarea`
     }
 `
 
-function PostWrite({ title = "", content = "", page }) {
+function PostWrite({ title = "", content = "", page, blurEvent }) {
     return (
         <>
             <PageTitle>{page}</PageTitle>
             <div>
                 <Label htmlFor={"title"}>제목</Label>
-                <InputTitle id={"title"} type={"text"} placeholder={"제목을 입력해주세요. (최대 26글자)"}></InputTitle>
+                <InputTitle
+                    id={"title"}
+                    type={"text"}
+                    placeholder={"제목을 입력해주세요. (최대 26글자)"}
+                    onBlur={(e) => blurEvent(e, "title")}
+                />
             </div>
 
             <div>
                 <Label htmlFor={"content"}>내용</Label>
-                <InputContent id={"content"} placeholder={"내용을 입력해주세요"}></InputContent>
+                <InputContent
+                    id={"content"}
+                    placeholder={"내용을 입력해주세요"}
+                    onBlur={(e) => blurEvent(e, "content")}
+                />
             </div>
         </>
     )
