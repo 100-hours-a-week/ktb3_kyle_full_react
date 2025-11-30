@@ -24,11 +24,11 @@ const InputTitle = styled.input`
     font-size: 14px;
     outline: none;
     transition: border-color 0.3s;
-    
+
     &:focus {
         border-bottom: 2px solid #ECAA00;
     }
-    
+
     &::placeholder {
         color: #838486;
         font-weight: 700;
@@ -44,24 +44,25 @@ const InputContent = styled.textarea`
     resize: none;
     outline: none;
     font-size: 14px;
-    
+
     &:focus {
         border-bottom: 2px solid #ECAA00;
     }
-    
+
     &::placeholder {
         color: #838486;
         font-weight: 700;
     }
 `
 
-function PostWrite({ title = "", content = "", page, blurEvent }) {
+function PostWrite({ title = "", content = "", page, blurEvent, titleRef = null, contentRef = null }) {
     return (
         <>
             <PageTitle>{page}</PageTitle>
             <div>
                 <Label htmlFor={"title"}>제목</Label>
                 <InputTitle
+                    ref={titleRef}
                     id={"title"}
                     type={"text"}
                     placeholder={"제목을 입력해주세요. (최대 26글자)"}
@@ -72,6 +73,7 @@ function PostWrite({ title = "", content = "", page, blurEvent }) {
             <div>
                 <Label htmlFor={"content"}>내용</Label>
                 <InputContent
+                    ref={contentRef}
                     id={"content"}
                     placeholder={"내용을 입력해주세요"}
                     onBlur={(e) => blurEvent(e, "content")}

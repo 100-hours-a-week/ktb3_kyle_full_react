@@ -1,5 +1,5 @@
 import Author from "../../components/Post/Author.jsx";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { ImageSlider } from "../../components/Post/ImageSlider.jsx";
 import { formatNumber, formatDate } from "../../utils/Formatter.js";
@@ -201,13 +201,18 @@ const CommentActionBox = styled.div`
     margin-left: auto;
 `
 
+const PostActionBox = styled.div`
+    display: flex;
+    gap: 8px;
+`
+
 const ActionButton = styled.button`
     display: flex;
     align-items: center;
     justify-content: center;
 
-    width: 30px;
-    height: 30px;
+    width: ${props => props.$length};
+    height: ${props => props.$length};
     border-radius: 6px;
     font-size: 12px;
     cursor: pointer;
@@ -241,6 +246,7 @@ const UpdateBadge = styled.div`
 
 export const PostDetail = () => {
     const COMMENT_MAX_LIMIT = 10;
+    const navigator = useNavigate();
     const { postId } = useParams();
     const modal = useModal();
     const [isLoading, setIsLoading] = useState(true);
@@ -316,7 +322,12 @@ export const PostDetail = () => {
             .then(() => location.reload());
     }
 
-    const handleDelete = (commentId) => {
+    const deletePost = async () => {
+        await api.delete(`/posts/${postId}`)
+            .then(() => navigator(`/posts`));
+    }
+
+    const handleCommentDelete = (commentId) => {
         modal.showModal(
             {
                 title: "댓글을 삭제하시겠습니까?",
@@ -324,6 +335,19 @@ export const PostDetail = () => {
             },
             async () => {
                 await deleteComment(commentId);
+                modal.closeModal();
+            }
+        );
+    };
+
+    const handlePostDelete = () => {
+        modal.showModal(
+            {
+                title: "게시글을 삭제하시겠습니까?",
+                text: "삭제한 내용은 복구할 수 없습니다.",
+            },
+            async () => {
+                await deletePost();
                 modal.closeModal();
             }
         );
@@ -356,6 +380,18 @@ export const PostDetail = () => {
                                 authorProfileImage={postDetail.authorProfileImage}
                                 createdAt={postDetail.createdAt}
                             />
+                            <PostActionBox>
+                                <ActionButton
+                                    $icon={"write.svg"}
+                                    $length={"40px"}
+                                    onClick={() => navigator(`/posts/update/${postId}`)}
+                                />
+                                <ActionButton
+                                    $icon={"trash.svg"}
+                                    $length={"40px"}
+                                    onClick={handlePostDelete}
+                                />
+                            </PostActionBox>
                         </AuthorContainer>
                         <Divider/>
                         {postDetail.imagePaths?.length > 0 && <ImageSlider postImages={postDetail.imagePaths}/>}
@@ -396,11 +432,13 @@ export const PostDetail = () => {
                                     <CommentActionBox>
                                         <ActionButton
                                             $icon={"write.svg"}
+                                            $length={"30px"}
                                             onClick={() => scrollToCommentUpdate(comment.id, comment.content)}
                                         />
                                         <ActionButton
                                             $icon={"trash.svg"}
-                                            onClick={() => handleDelete(comment.id)}
+                                            $length={"30px"}
+                                            onClick={() => handleCommentDelete(comment.id)}
                                         />
                                     </CommentActionBox>
                                 }
