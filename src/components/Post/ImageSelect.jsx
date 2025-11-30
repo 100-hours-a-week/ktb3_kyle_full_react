@@ -28,7 +28,7 @@ const InputImage = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     input[type = "file"] {
         position: absolute;
         width: 0;
@@ -37,7 +37,7 @@ const InputImage = styled.div`
         overflow: hidden;
         border: 0;
     }
-    
+
     &::before {
         content: "";
         display: inline-block;
@@ -61,7 +61,7 @@ const Image = styled.div`
     height: 72px;
     border: 1px solid #E2E2E2;
     border-radius: 8px;
-    
+
     background-image: url("${props => props.$imageUrl}");
     background-size: cover;
     background-position: center;
@@ -83,15 +83,15 @@ const CancelButton = styled.div`
     right: -6px;
 
     transition: transform 0.1s ease, box-shadow 0.1s ease;
-    
+
     &:active {
         transform: scale(0.96);
     }
 `
 
-export const ImageSelect = () => {
+export const ImageSelect = ({ imagePreview }) => {
     const imageInputRef = useRef(null);
-    const { imageUrlList, showImagePreview, removeSelectedImage } = useImagePreview();
+    const { imageUrlList, imageFiles, showImagePreview, removeSelectedImage } = imagePreview;
 
     return (
         <ImageSelectBox>
@@ -108,7 +108,7 @@ export const ImageSelect = () => {
                     />
                 </InputImage>
                 <ImageList>
-                    {imageUrlList.map((imageUrl, index) => (
+                    {imageUrlList?.map((imageUrl, index) => (
                         <Image key={imageUrl} $imageUrl={imageUrl}>
                             <CancelButton onClick={() => removeSelectedImage(index)}/>
                         </Image>

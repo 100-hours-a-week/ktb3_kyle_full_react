@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { useRef, useState } from "react";
-import { useImagePreview } from "../../hooks/useImagePreview.jsx";
 
 const ImageWrapper = styled.div`
     width: 100%;
@@ -25,11 +24,8 @@ const ImageCircle = styled.div`
     position: relative;
 `
 
-export const ProfileImage = ({ length, imageUrl = null, isUpload = true }) => {
+export const ProfileImage = ({ length, imageUrl = null, isUpload = true, imagePreview }) => {
     const inputRef = useRef(null);
-    const imagePreview = useImagePreview(imageUrl);
-
-    // TODO: API 제작
 
     return (
         <>
@@ -37,7 +33,7 @@ export const ProfileImage = ({ length, imageUrl = null, isUpload = true }) => {
             <ImageWrapper>
                 <ImageCircle
                     $length={length}
-                    $imageUrl={imagePreview.imageUrlList[0]}
+                    $imageUrl={imagePreview.imageUrlList?.at(0)}
                     onClick={() => inputRef.current.click()}
                 >
                     {isUpload &&
