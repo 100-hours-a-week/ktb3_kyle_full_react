@@ -29,7 +29,6 @@ export function useImagePreview(urlList = null) {
     }, []);
 
     const removeSelectedImage = useCallback((indexToRemove) => {
-        imageUrlList.
         setImageUrlList(prev => prev.filter((_, i) => i !== indexToRemove));
         setImageFiles(prev => prev.filter((_, i) => i !== indexToRemove));
     }, [])
